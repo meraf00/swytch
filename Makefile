@@ -48,11 +48,21 @@ migrate-create: $(MIGRATE)
 		--to "file://core/db/schema/schema.sql" \
 		--dev-url "docker://postgres?search_path=public"
 
+migrate-recompute: $(MIGRATE)
+	atlas migrate hash \
+		--dir "file://core/db/migrations"	
+
 migrate-up: $(MIGRATE)
 	atlas migrate apply \
 		--dir "file://core/db/migrations" \
 		--url "$(POSTGRES_DSN)"
 
+migrate-down: $(MIGRATE)
+	atlas migrate down \
+		--dir "file://core/db/migrations" \
+		--url "$(POSTGRES_DSN)" \
+		--dev-url "docker://postgres?search_path=public"
+	
 # Run the application
 .PHONY: run
 run:
