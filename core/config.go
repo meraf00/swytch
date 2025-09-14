@@ -16,6 +16,7 @@ type AppConfig struct {
 	Database    DatabaseConfig
 	Encryption  EncryptionConfig
 	Redis       RedisConfig
+	Storage     StorageConfig
 }
 
 type SwaggerConfig struct {
@@ -50,6 +51,15 @@ type RedisConfig struct {
 	Addr     string
 	Password string
 	DB       int
+}
+
+type StorageConfig struct {
+	Endpoint        string
+	AccessKeyID     string
+	SecretAccessKey string
+	UseSSL          bool
+	BucketName      string
+	PresignedUrlTTL time.Duration
 }
 
 func LoadConfig(logger *logger.Log) *AppConfig {
@@ -87,6 +97,14 @@ func LoadConfig(logger *logger.Log) *AppConfig {
 			Addr:     env.GetEnvString("REDIS_ADDR", "127.0.0.1:6379", false),
 			Password: env.GetEnvString("REDIS_PASSWORD", "", false),
 			DB:       env.GetEnvNumber("REDIS_DB", 0, false),
+		},
+		Storage: StorageConfig{
+			Endpoint:        env.GetEnvString("MINIO_ENDPOINT", "", true),
+			AccessKeyID:     env.GetEnvString("MINIO_ACCESS_KEY", "", true),
+			SecretAccessKey: env.GetEnvString("MINIO_SECRET_KEY", "", true),
+			UseSSL:          env.GetEnvString("MINIO_USE_SSL", "false", false) == "true",
+			BucketName:      env.GetEnvString("MINIO_BUCKET_NAME", "", true),
+			PresignedUrlTTL: time.Duration(env.GetEnvNumber("MINIO_PRESIGNED_URL_TTL", 600, false)) * time.Second,
 		},
 	}
 }
