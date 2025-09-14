@@ -167,7 +167,7 @@ func HandleCreateJob(cs *app.ConversionService) http.HandlerFunc {
 }
 
 // Generate pre-signed download url for completed task
-func HandleTaskDownload(cs *app.ConversionService) http.HandlerFunc {
+func HandleGetCompletedTaskDownloadURL(cs *app.ConversionService) http.HandlerFunc {
 	type downloadRequest struct {
 		TaskID string `json:"task_id" validate:"required"`
 	}

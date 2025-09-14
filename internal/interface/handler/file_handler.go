@@ -9,7 +9,7 @@ import (
 )
 
 // Generate pre-signed upload url
-func HandleFileUpload(fs app.FileService) http.HandlerFunc {
+func HandleGetUploadPresignedURL(fs app.FileService) http.HandlerFunc {
 	type uploadRequest struct {
 		Filename string `json:"filename" validate:"required"`
 	}

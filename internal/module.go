@@ -32,11 +32,11 @@ func InitModules(config *core.AppConfig, logger *logger.Log, server *core.Server
 	apiRouter := server.ApiRouter
 
 	// Files
-	apiRouter.HandleFunc("/files", handler.HandleFileUpload(fileService)).Methods("POST")
+	apiRouter.HandleFunc("/files", handler.HandleGetUploadPresignedURL(fileService)).Methods("POST")
 
 	// Jobs and Tasks
 	apiRouter.HandleFunc("/jobs", handler.HandleCreateJob(conversionService)).Methods("POST")
 	apiRouter.HandleFunc("/jobs/{job_id}", handler.HandleGetJob(conversionService)).Methods("GET")
 	apiRouter.HandleFunc("/jobs/{job_id}/tasks", handler.HandleGetJobTasks(conversionService)).Methods("GET")
-	apiRouter.HandleFunc("/tasks/{task_id}/download", handler.HandleTaskDownload(conversionService)).Methods("POST")
+	apiRouter.HandleFunc("/tasks/{task_id}/download", handler.HandleGetCompletedTaskDownloadURL(conversionService)).Methods("POST")
 }
