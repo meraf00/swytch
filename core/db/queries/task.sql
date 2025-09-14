@@ -10,7 +10,20 @@ RETURNING
     *;
 
 -- name: GetTaskByID :one
-SELECT * FROM tasks WHERE id = $1;
+SELECT 
+    t.*,
+    sqlc.embed(f) 
+FROM tasks t
+    LEFT JOIN files f ON f.id = t.file_id
+WHERE t.id = $1;
+
+-- name: GetTasksByJobID :many
+SELECT 
+    t.*,
+    sqlc.embed(f)
+FROM tasks t    
+    LEFT JOIN files f ON f.id = t.file_id
+WHERE t.job_id = $1;
 
 -- name: UpdateTaskStatus :one
 UPDATE tasks

@@ -3,7 +3,8 @@ package domain
 import "time"
 
 type File struct {
-	Id             int
+	ID             string
+	ObjectName     string
 	OriginalName   string
 	OriginalFormat string
 	CreatedAt      time.Time

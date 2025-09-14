@@ -1,0 +1,13 @@
+POST http://localhost:9090/api/jobs
+Content-Type: application/json
+
+{
+  "files": [
+    {        
+      "object_name": "123e4567-e89b-12d3-a456-426614174000",
+      "original_name": "example.pdf",
+      "original_format": "pdf",
+      "target_formats": ["docx", "epub"]
+    }
+  ]
+}

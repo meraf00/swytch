@@ -49,12 +49,32 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 }
 
 const getTaskByID = `-- name: GetTaskByID :one
-SELECT id, file_id, job_id, converted_file_name, target_format, status, started_at, completed_at, error_message, created_at, updated_at FROM tasks WHERE id = $1
+SELECT 
+    t.id, t.file_id, t.job_id, t.converted_file_name, t.target_format, t.status, t.started_at, t.completed_at, t.error_message, t.created_at, t.updated_at,
+    f.id, f.object_name, f.original_name, f.original_format, f.created_at, f.updated_at 
+FROM tasks t
+    LEFT JOIN files f ON f.id = t.file_id
+WHERE t.id = $1
 `
 
-func (q *Queries) GetTaskByID(ctx context.Context, id int32) (Task, error) {
+type GetTaskByIDRow struct {
+	ID                int32
+	FileID            pgtype.Int4
+	JobID             pgtype.Int4
+	ConvertedFileName pgtype.Text
+	TargetFormat      string
+	Status            NullTaskStatus
+	StartedAt         pgtype.Timestamptz
+	CompletedAt       pgtype.Timestamptz
+	ErrorMessage      pgtype.Text
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	File              File
+}
+
+func (q *Queries) GetTaskByID(ctx context.Context, id int32) (GetTaskByIDRow, error) {
 	row := q.db.QueryRow(ctx, getTaskByID, id)
-	var i Task
+	var i GetTaskByIDRow
 	err := row.Scan(
 		&i.ID,
 		&i.FileID,
@@ -67,8 +87,76 @@ func (q *Queries) GetTaskByID(ctx context.Context, id int32) (Task, error) {
 		&i.ErrorMessage,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.File.ID,
+		&i.File.ObjectName,
+		&i.File.OriginalName,
+		&i.File.OriginalFormat,
+		&i.File.CreatedAt,
+		&i.File.UpdatedAt,
 	)
 	return i, err
+}
+
+const getTasksByJobID = `-- name: GetTasksByJobID :many
+SELECT 
+    t.id, t.file_id, t.job_id, t.converted_file_name, t.target_format, t.status, t.started_at, t.completed_at, t.error_message, t.created_at, t.updated_at,
+    f.id, f.object_name, f.original_name, f.original_format, f.created_at, f.updated_at
+FROM tasks t    
+    LEFT JOIN files f ON f.id = t.file_id
+WHERE t.job_id = $1
+`
+
+type GetTasksByJobIDRow struct {
+	ID                int32
+	FileID            pgtype.Int4
+	JobID             pgtype.Int4
+	ConvertedFileName pgtype.Text
+	TargetFormat      string
+	Status            NullTaskStatus
+	StartedAt         pgtype.Timestamptz
+	CompletedAt       pgtype.Timestamptz
+	ErrorMessage      pgtype.Text
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	File              File
+}
+
+func (q *Queries) GetTasksByJobID(ctx context.Context, jobID pgtype.Int4) ([]GetTasksByJobIDRow, error) {
+	rows, err := q.db.Query(ctx, getTasksByJobID, jobID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTasksByJobIDRow
+	for rows.Next() {
+		var i GetTasksByJobIDRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.FileID,
+			&i.JobID,
+			&i.ConvertedFileName,
+			&i.TargetFormat,
+			&i.Status,
+			&i.StartedAt,
+			&i.CompletedAt,
+			&i.ErrorMessage,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.File.ID,
+			&i.File.ObjectName,
+			&i.File.OriginalName,
+			&i.File.OriginalFormat,
+			&i.File.CreatedAt,
+			&i.File.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateTaskStatus = `-- name: UpdateTaskStatus :one

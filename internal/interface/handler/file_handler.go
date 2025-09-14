@@ -15,7 +15,7 @@ func HandleFileUpload(fs app.FileService) http.HandlerFunc {
 	}
 
 	type uploadResponse struct {
-		UploadUrl string `json:"upload_url"`
+		UploadURL string `json:"upload_url"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -39,43 +39,7 @@ func HandleFileUpload(fs app.FileService) http.HandlerFunc {
 		}
 
 		respond.SuccessWithData(w, http.StatusOK, &uploadResponse{
-			UploadUrl: url.RawPath,
-		})
-	}
-}
-
-// Generate pre-signed download url for completed task
-func HandleTaskDownload(cs *app.ConversionService) http.HandlerFunc {
-	type downloadRequest struct {
-		TaskID string `json:"task_id" validate:"required"`
-	}
-
-	type response struct {
-		DownloadUrl string `json:"download_url"`
-	}
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-		validator := validation.NewValidator(validation.ValidationSchemas{
-			Params: &downloadRequest{},
-		})
-
-		body, err := validator.GetParams(r)
-		if err != nil {
-			respond.Error(w, err)
-			return
-		}
-
-		req := body.(*downloadRequest)
-
-		url, err := cs.GenerateTaskDownloadUrl(ctx, req.TaskID)
-		if err != nil {
-			respond.Error(w, err)
-			return
-		}
-
-		respond.JSON(w, http.StatusOK, &response{
-			DownloadUrl: url.RawPath,
+			UploadURL: url.String(),
 		})
 	}
 }

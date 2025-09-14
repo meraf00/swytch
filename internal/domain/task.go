@@ -1,9 +1,10 @@
 package domain
 
 import (
-	"errors"
 	"slices"
 	"time"
+
+	"github.com/meraf00/swytch/core/lib/apperror"
 )
 
 type TaskStatus string
@@ -16,7 +17,7 @@ const (
 )
 
 type Task struct {
-	Id                int
+	ID                string
 	File              File
 	TargetFormat      string
 	ConvertedFileName string
@@ -40,12 +41,12 @@ var AllowedConversions = map[string][]string{
 func NewTask(file File, targetFormat string) (*Task, error) {
 	allowed, ok := AllowedConversions[file.OriginalFormat]
 	if !ok {
-		return nil, errors.New("unsupported source format: " + file.OriginalFormat)
+		return nil, apperror.BadRequest("unsupported source format: "+file.OriginalFormat, "", nil)
 	}
 
 	valid := slices.Contains(allowed, targetFormat)
 	if !valid {
-		return nil, errors.New("conversion from " + file.OriginalFormat + " to " + targetFormat + " is not allowed")
+		return nil, apperror.BadRequest("conversion from "+file.OriginalFormat+" to "+targetFormat+" is not allowed", "", nil)
 	}
 
 	now := time.Now()

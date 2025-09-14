@@ -8,3 +8,10 @@ func ToPGText(s string) pgtype.Text {
 	}
 	return pgtype.Text{String: s, Valid: true}
 }
+
+func ToPGInt4(i int32) pgtype.Int4 {
+	if i == 0 {
+		return pgtype.Int4{}
+	}
+	return pgtype.Int4{Int32: i, Valid: true}
+}

@@ -57,6 +57,7 @@ func (ns NullTaskStatus) Value() (driver.Value, error) {
 
 type File struct {
 	ID             int32
+	ObjectName     pgtype.UUID
 	OriginalName   string
 	OriginalFormat string
 	CreatedAt      pgtype.Timestamptz

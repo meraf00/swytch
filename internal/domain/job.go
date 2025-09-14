@@ -3,7 +3,7 @@ package domain
 import "time"
 
 type Job struct {
-	Id        int
+	ID        string
 	Tasks     []Task
 	CreatedAt time.Time
 	UpdatedAt time.Time

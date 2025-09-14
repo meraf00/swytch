@@ -8,6 +8,7 @@ CREATE TABLE jobs (
 
 CREATE TABLE files (
     id SERIAL PRIMARY KEY,
+    object_name UUID NOT NULL,
     original_name VARCHAR(255) NOT NULL,
     original_format VARCHAR(50) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -28,3 +29,8 @@ CREATE TABLE tasks (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE INDEX "idx_tasks_file_id" ON "tasks" ("file_id");
+-- Create index "idx_tasks_job_id" to table: "tasks"
+CREATE INDEX "idx_tasks_job_id" ON "tasks" ("job_id");
+-- Create index "idx_tasks_status" to table: "tasks"
+CREATE INDEX "idx_tasks_status" ON "tasks" ("status");
