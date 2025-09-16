@@ -6,7 +6,7 @@ import (
 	"github.com/meraf00/swytch/core/lib/logger"
 	"github.com/meraf00/swytch/internal/app"
 	"github.com/meraf00/swytch/internal/infra"
-	"github.com/meraf00/swytch/internal/interface/handler"
+	handler "github.com/meraf00/swytch/internal/interface/http"
 	"github.com/redis/go-redis/v9"
 )
 
