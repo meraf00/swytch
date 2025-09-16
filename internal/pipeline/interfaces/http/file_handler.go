@@ -5,7 +5,7 @@ import (
 
 	"github.com/meraf00/swytch/core/lib/respond"
 	"github.com/meraf00/swytch/core/lib/validation"
-	"github.com/meraf00/swytch/internal/app"
+	"github.com/meraf00/swytch/internal/pipeline/app"
 )
 
 // Generate pre-signed upload url

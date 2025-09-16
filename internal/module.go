@@ -4,9 +4,9 @@ import (
 	"github.com/meraf00/swytch/core"
 	"github.com/meraf00/swytch/core/lib/hashids"
 	"github.com/meraf00/swytch/core/lib/logger"
-	"github.com/meraf00/swytch/internal/app"
-	"github.com/meraf00/swytch/internal/infra"
-	handler "github.com/meraf00/swytch/internal/interface/http"
+	"github.com/meraf00/swytch/internal/pipeline/app"
+	"github.com/meraf00/swytch/internal/pipeline/infra"
+	handler "github.com/meraf00/swytch/internal/pipeline/interfaces/http"
 	"github.com/redis/go-redis/v9"
 )
 

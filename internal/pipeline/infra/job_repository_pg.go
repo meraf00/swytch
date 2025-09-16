@@ -8,7 +8,7 @@ import (
 	"github.com/meraf00/swytch/core/db"
 	sql "github.com/meraf00/swytch/core/db/sqlc"
 	"github.com/meraf00/swytch/core/lib/hashids"
-	"github.com/meraf00/swytch/internal/domain"
+	"github.com/meraf00/swytch/internal/pipeline/domain"
 )
 
 type JobRepositoryPG struct {

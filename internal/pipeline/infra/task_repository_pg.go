@@ -5,7 +5,7 @@ import (
 
 	"github.com/meraf00/swytch/core"
 	"github.com/meraf00/swytch/core/lib/hashids"
-	"github.com/meraf00/swytch/internal/domain"
+	"github.com/meraf00/swytch/internal/pipeline/domain"
 )
 
 type TaskRepositoryPG struct {

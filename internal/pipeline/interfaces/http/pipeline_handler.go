@@ -6,11 +6,11 @@ import (
 
 	"github.com/meraf00/swytch/core/lib/respond"
 	"github.com/meraf00/swytch/core/lib/validation"
-	"github.com/meraf00/swytch/internal/app"
+	"github.com/meraf00/swytch/internal/pipeline/app"
 )
 
 // Get job by ID
-func HandleGetJob(cs *app.ConversionService) http.HandlerFunc {
+func HandleGetJob(cs *app.PipelineService) http.HandlerFunc {
 	type getJobRequest struct {
 		ID string `json:"job_id" validate:"required"`
 	}
@@ -51,7 +51,7 @@ func HandleGetJob(cs *app.ConversionService) http.HandlerFunc {
 }
 
 // Get tasks for a job
-func HandleGetJobTasks(cs *app.ConversionService) http.HandlerFunc {
+func HandleGetJobTasks(cs *app.PipelineService) http.HandlerFunc {
 	type getJobRequest struct {
 		ID string `json:"job_id" validate:"required"`
 	}
@@ -116,7 +116,7 @@ func HandleGetJobTasks(cs *app.ConversionService) http.HandlerFunc {
 }
 
 // Create a new conversion job with related tasks and files
-func HandleCreateJob(cs *app.ConversionService) http.HandlerFunc {
+func HandleCreateJob(cs *app.PipelineService) http.HandlerFunc {
 	type createJobRequest struct {
 		Files []struct {
 			ObjectName     string   `json:"object_name"`
@@ -167,7 +167,7 @@ func HandleCreateJob(cs *app.ConversionService) http.HandlerFunc {
 }
 
 // Generate pre-signed download url for completed task
-func HandleGetCompletedTaskDownloadURL(cs *app.ConversionService) http.HandlerFunc {
+func HandleGetCompletedTaskDownloadURL(cs *app.PipelineService) http.HandlerFunc {
 	type downloadRequest struct {
 		TaskID string `json:"task_id" validate:"required"`
 	}

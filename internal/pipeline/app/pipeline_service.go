@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/meraf00/swytch/internal/domain"
+	"github.com/meraf00/swytch/internal/pipeline/domain"
 )
 
 type CreateJobParams struct {
@@ -16,7 +16,7 @@ type CreateJobParams struct {
 	}
 }
 
-type ConversionService struct {
+type PipelineService struct {
 	taskRepo    domain.TaskRepository
 	jobRepo     domain.JobRepository
 	fileService FileService
@@ -26,15 +26,15 @@ func NewConversionService(
 	taskRepo domain.TaskRepository,
 	jobRepo domain.JobRepository,
 	fileService FileService,
-) *ConversionService {
-	return &ConversionService{
+) *PipelineService {
+	return &PipelineService{
 		taskRepo:    taskRepo,
 		jobRepo:     jobRepo,
 		fileService: fileService,
 	}
 }
 
-func (cs *ConversionService) GenerateTaskDownloadUrl(ctx context.Context, taskID string) (*url.URL, error) {
+func (cs *PipelineService) GenerateTaskDownloadUrl(ctx context.Context, taskID string) (*url.URL, error) {
 	task, err := cs.taskRepo.GetTaskByID(ctx, taskID)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func (cs *ConversionService) GenerateTaskDownloadUrl(ctx context.Context, taskID
 	return cs.fileService.GenerateDownloadUrl(ctx, task.ConvertedFileName)
 }
 
-func (cs *ConversionService) CreateJob(ctx context.Context, job *CreateJobParams) (string, error) {
+func (cs *PipelineService) CreateJob(ctx context.Context, job *CreateJobParams) (string, error) {
 	var tasks []domain.Task
 
 	for _, file := range job.Files {
@@ -75,11 +75,11 @@ func (cs *ConversionService) CreateJob(ctx context.Context, job *CreateJobParams
 	return newJob.ID, nil
 }
 
-func (cs *ConversionService) GetJob(ctx context.Context, jobID string) (*domain.Job, error) {
+func (cs *PipelineService) GetJob(ctx context.Context, jobID string) (*domain.Job, error) {
 	return cs.jobRepo.GetJobByID(ctx, jobID)
 }
 
-func (cs *ConversionService) GetJobTasks(ctx context.Context, jobID string) ([]domain.Task, error) {
+func (cs *PipelineService) GetJobTasks(ctx context.Context, jobID string) ([]domain.Task, error) {
 	job, err := cs.jobRepo.GetJobWithTasksAndFiles(ctx, jobID)
 	if err != nil {
 		return nil, err
