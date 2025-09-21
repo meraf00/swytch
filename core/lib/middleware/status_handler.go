@@ -13,7 +13,7 @@ type StatusResponse struct {
 	Uptime    float64   `json:"uptime"`
 }
 
-func StatusHandler(startedAt time.Time, log *logger.Log) http.HandlerFunc {
+func StatusHandler(startedAt time.Time, log logger.Log) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		errorType := r.URL.Query().Get("error")
 

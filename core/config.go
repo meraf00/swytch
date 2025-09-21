@@ -17,6 +17,7 @@ type AppConfig struct {
 	Encryption  EncryptionConfig
 	Redis       RedisConfig
 	Storage     StorageConfig
+	RabbitMQ    RabbitMQConfig
 }
 
 type SwaggerConfig struct {
@@ -53,6 +54,10 @@ type RedisConfig struct {
 	DB       int
 }
 
+type RabbitMQConfig struct {
+	Addr string
+}
+
 type StorageConfig struct {
 	Endpoint        string
 	AccessKeyID     string
@@ -62,7 +67,7 @@ type StorageConfig struct {
 	PresignedUrlTTL time.Duration
 }
 
-func LoadConfig(logger *logger.Log) *AppConfig {
+func LoadConfig(logger logger.Log) *AppConfig {
 	env.LoadEnv(logger)
 
 	return &AppConfig{
@@ -105,6 +110,9 @@ func LoadConfig(logger *logger.Log) *AppConfig {
 			UseSSL:          env.GetEnvString("MINIO_USE_SSL", "false", false) == "true",
 			BucketName:      env.GetEnvString("MINIO_BUCKET_NAME", "", true),
 			PresignedUrlTTL: time.Duration(env.GetEnvNumber("MINIO_PRESIGNED_URL_TTL", 600, false)) * time.Second,
+		},
+		RabbitMQ: RabbitMQConfig{
+			Addr: env.GetEnvString("RABBITMQ_ADDR", "amqp://guest:guest@127.0.0.1:5672/", false),
 		},
 	}
 }

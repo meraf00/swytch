@@ -9,7 +9,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func NewRedis(cfg RedisConfig, log *logger.Log) (*redis.Client, func(), error) {
+func NewRedis(cfg RedisConfig, log logger.Log) (*redis.Client, func(), error) {
 	options := &redis.Options{
 		Addr:     cfg.Addr,
 		Password: cfg.Password,

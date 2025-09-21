@@ -11,7 +11,7 @@ import (
 )
 
 // Load environment variables based on GO_APP_ENV
-func LoadEnv(logger *logger.Log) {
+func LoadEnv(logger logger.Log) {
 	env := os.Getenv("GO_APP_ENV")
 	if env == "" {
 		env = "development"

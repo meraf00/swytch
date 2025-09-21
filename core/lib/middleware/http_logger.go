@@ -37,7 +37,7 @@ func DefaultLoggerOptions() LoggerOptions {
 	}
 }
 
-func HTTPLoggerMiddleware(log *logger.Log, opts LoggerOptions) mux.MiddlewareFunc {
+func HTTPLoggerMiddleware(log logger.Log, opts LoggerOptions) mux.MiddlewareFunc {
 	if opts.GenRequestID == nil {
 		opts.GenRequestID = DefaultLoggerOptions().GenRequestID
 	}

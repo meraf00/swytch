@@ -19,7 +19,7 @@ type Server struct {
 	Started    chan struct{}
 }
 
-func NewServer(config *AppConfig, log *logger.Log) (*Server, func()) {
+func NewServer(config *AppConfig, log logger.Log) (*Server, func()) {
 	// Router
 	router := mux.NewRouter()
 
@@ -62,7 +62,7 @@ func NewServer(config *AppConfig, log *logger.Log) (*Server, func()) {
 	}, shutdown
 }
 
-func StartServer(server *Server, logger *logger.Log) {
+func StartServer(server *Server, logger logger.Log) {
 	go func() {
 		logger.Infof("Starting server on %s", server.HttpServer.Addr)
 

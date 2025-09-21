@@ -10,11 +10,11 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func InitModules(config *core.AppConfig, logger *logger.Log, server *core.Server, db core.Database, rdb *redis.Client) {
+func InitModules(config *core.AppConfig, log logger.Log, server *core.Server, db core.Database, rdb *redis.Client) {
 	// Core
 	hd, err := hashids.NewHashIDService(config.Encryption)
 	if err != nil {
-		logger.Fatalf("Failed to register auth module:", err)
+		log.Fatalf("Failed to register auth module:", err)
 	}
 
 	// Repositories
@@ -24,7 +24,7 @@ func InitModules(config *core.AppConfig, logger *logger.Log, server *core.Server
 	// Services
 	fileService, err := infra.NewMinioFileService(&config.Storage)
 	if err != nil {
-		logger.Fatalf("Failed to initiate minio service", err)
+		log.Fatalf("Failed to initiate minio service", err)
 	}
 	conversionService := app.NewConversionService(taskRepo, jobRepo, fileService)
 
