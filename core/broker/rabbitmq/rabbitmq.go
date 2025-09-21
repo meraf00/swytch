@@ -137,8 +137,8 @@ func (client *Client) handleReInit(conn *amqp.Connection) bool {
 			continue
 		}
 
-		go func() {
-			for queue := range client.channels {
+		for queue := range client.channels {
+			go func() {
 				err := <-client.notifyChanClose[queue]
 				if err != nil {
 					client.logger.Infof("Channel for queue %s closed. Re-running init...", queue)
@@ -146,10 +146,11 @@ func (client *Client) handleReInit(conn *amqp.Connection) bool {
 						*amqp.Error
 						queue string
 					}{err, queue}
-					return
+
 				}
-			}
-		}()
+				close(client.aggNotifyChanClose)
+			}()
+		}
 
 		select {
 		case <-client.done:
@@ -180,7 +181,7 @@ func (client *Client) init(conn *amqp.Connection) error {
 
 		_, err = ch.QueueDeclare(
 			queue,
-			false,
+			true,
 			false,
 			false,
 			false,
@@ -226,7 +227,7 @@ func (client *Client) AddQueue(queue string) error {
 
 	_, err = ch.QueueDeclare(
 		queue,
-		false,
+		true,
 		false,
 		false,
 		false,
@@ -240,6 +241,19 @@ func (client *Client) AddQueue(queue string) error {
 	client.notifyConfirm[queue] = make(chan amqp.Confirmation, 1)
 	ch.NotifyClose(client.notifyChanClose[queue])
 	ch.NotifyPublish(client.notifyConfirm[queue])
+
+	go func() {
+		err := <-client.notifyChanClose[queue]
+		if err != nil {
+			client.logger.Infof("Channel for queue %s closed. Re-running init...", queue)
+			client.aggNotifyChanClose <- struct {
+				*amqp.Error
+				queue string
+			}{err, queue}
+
+		}
+		close(client.aggNotifyChanClose)
+	}()
 
 	return nil
 }
@@ -262,6 +276,10 @@ func (client *Client) changeChannels(channels map[string]*amqp.Channel) {
 		client.channels[queue].NotifyClose(client.notifyChanClose[queue])
 		client.channels[queue].NotifyPublish(client.notifyConfirm[queue])
 	}
+	client.aggNotifyChanClose = make(chan struct {
+		*amqp.Error
+		queue string
+	})
 }
 
 // Publish will push data onto the queue, and wait for a confirmation.
@@ -324,7 +342,7 @@ func (client *Client) PublishNoConfirm(exchange, queue string, data []byte) erro
 // It is required to call delivery.Ack when it has been
 // successfully processed, or delivery.Nack when it fails.
 // Ignoring this will cause data to build up on the server.
-func (client *Client) Consume(exchange, queue string) (<-chan amqp.Delivery, error) {
+func (client *Client) Consume(queue string) (<-chan amqp.Delivery, error) {
 	client.m.Lock()
 	if !client.isReady {
 		client.m.Unlock()
@@ -347,7 +365,7 @@ func (client *Client) Consume(exchange, queue string) (<-chan amqp.Delivery, err
 
 	return ch.Consume(
 		queue,
-		exchange,
+		"",
 		false,
 		false,
 		false,
